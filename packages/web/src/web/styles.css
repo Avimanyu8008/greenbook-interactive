@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+:root {
+  --bg: #f9faf7;
+  --surface: #ffffff;
+  --surface-2: #f2f5ef;
+  --border: #d8e4d0;
+  --text: #1a1f16;
+  --text-muted: #5a6b52;
+  --accent: #3a7d44;
+  --accent-light: #e8f4eb;
+  --accent-mid: #5da668;
+  --easy: #3a7d44;
+  --medium: #d97706;
+  --hard: #dc2626;
+  --tag-bg: #e8f4eb;
+  --tag-text: #2d6035;
+  --sim-bg: #1a1f16;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: 'DM Serif Display', serif;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--surface-2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* KaTeX overrides */
+.katex { font-size: 1em; }
+.katex-display { overflow-x: auto; overflow-y: hidden; }
+
+/* ─── Dark Mode ─────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --bg: #0f1410;
+  --surface: #1a1f16;
+  --surface-2: #232b1e;
+  --border: #2e3d28;
+  --text: #e8f0e3;
+  --text-muted: #7a9b6e;
+  --accent: #5da668;
+  --accent-light: #1a2e1d;
+  --accent-mid: #3a7d44;
+  --easy: #5da668;
+  --medium: #e5a445;
+  --hard: #e85555;
+  --tag-bg: #1a2e1d;
+  --tag-text: #7ac282;
+  --sim-bg: #0a0e09;
+}

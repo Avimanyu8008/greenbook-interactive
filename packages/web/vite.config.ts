@@ -21,6 +21,10 @@ export default defineConfig(({ mode }) => {
 		server: {
 			allowedHosts: true,
 			hmr: { overlay: false, }
+		},
+		build: {
+			sourcemap: false,
+			minify: 'esbuild',
 		}
 	};
 });

@@ -167,9 +167,15 @@ export default function PlaylistsPage() {
 
           return (
             <Link key={pl.id} to={`/playlists/${pl.id}`}>
-              <div
-                className="rounded-2xl p-6 cursor-pointer transition-all hover:shadow-md group"
-                style={{ background: pl.color, border: `1px solid ${pl.accent}30` }}
+            <div
+                className="rounded-2xl p-6 cursor-pointer transition-all hover:shadow-lg group"
+                style={{
+                  background: "var(--glass-bg)",
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                  border: `1px solid ${pl.accent}35`,
+                  boxShadow: `0 0 0 0 ${pl.accent}00`,
+                }}
               >
                 <div className="flex items-start justify-between mb-3">
                   <span className="text-2xl">{pl.emoji}</span>
@@ -179,10 +185,10 @@ export default function PlaylistsPage() {
                     style={{ color: pl.accent }}
                   />
                 </div>
-                <h3 className="font-bold text-base mb-1" style={{ color: "var(--text)" }}>
+                <h3 className="font-bold text-base mb-1" style={{ color: "#e8f0e3" }}>
                   {pl.title}
                 </h3>
-                <p className="text-xs leading-relaxed mb-4" style={{ color: "var(--text-muted)" }}>
+                <p className="text-xs leading-relaxed mb-4" style={{ color: "#a0b8a8" }}>
                   {pl.description}
                 </p>
 
@@ -190,7 +196,7 @@ export default function PlaylistsPage() {
                   <span className="text-xs font-medium" style={{ color: pl.accent }}>
                     {found} problems
                   </span>
-                  <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  <span className="text-xs" style={{ color: "#a0b8a8" }}>
                     {solved}/{found} done
                   </span>
                 </div>

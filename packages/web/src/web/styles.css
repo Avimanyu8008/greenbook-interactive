@@ -2,21 +2,29 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f9faf7;
-  --surface: #ffffff;
-  --surface-2: #f2f5ef;
-  --border: #d8e4d0;
-  --text: #1a1f16;
-  --text-muted: #5a6b52;
-  --accent: #3a7d44;
-  --accent-light: #e8f4eb;
-  --accent-mid: #5da668;
-  --easy: #3a7d44;
-  --medium: #d97706;
-  --hard: #dc2626;
-  --tag-bg: #e8f4eb;
-  --tag-text: #2d6035;
-  --sim-bg: #1a1f16;
+  --bg: #0d1117;
+  --bg-gradient: linear-gradient(135deg, #0d1117 0%, #0a1a0f 50%, #111827 100%);
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-solid: #161d1a;
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --surface-2-solid: #1a2320;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-solid: #1e2d22;
+  --text: #e8f0e3;
+  --text-muted: #6b8f72;
+  --accent: #4ade80;
+  --accent-hover: #22c55e;
+  --accent-light: rgba(74, 222, 128, 0.08);
+  --accent-mid: #22c55e;
+  --easy: #4ade80;
+  --medium: #e5a445;
+  --hard: #e85555;
+  --tag-bg: rgba(74, 222, 128, 0.08);
+  --tag-text: #4ade80;
+  --sim-bg: #060c09;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.07);
+  --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 * {
@@ -24,7 +32,9 @@
 }
 
 body {
-  background-color: var(--bg);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  min-height: 100vh;
   color: var(--text);
   font-family: 'Poppins', sans-serif;
   margin: 0;
@@ -40,31 +50,48 @@ h1, h2, h3 {
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--surface-2); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
 /* KaTeX overrides */
 .katex { font-size: 1em; }
 .katex-display { overflow-x: auto; overflow-y: hidden; }
 
-/* ─── Dark Mode ─────────────────────────────────────────────── */
-[data-theme="dark"] {
-  --bg: #0f1410;
-  --surface: #1a1f16;
-  --surface-2: #232b1e;
-  --border: #2e3d28;
-  --text: #e8f0e3;
-  --text-muted: #7a9b6e;
-  --accent: #5da668;
-  --accent-light: #1a2e1d;
-  --accent-mid: #3a7d44;
-  --easy: #5da668;
-  --medium: #e5a445;
-  --hard: #e85555;
-  --tag-bg: #1a2e1d;
-  --tag-text: #7ac282;
-  --sim-bg: #0a0e09;
+/* ─── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ─── Glass utility ─────────────────────────────────────────── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* ─── Light Mode override (keep toggle working) ──────────────── */
+[data-theme="light"] {
+  --bg: #f9faf7;
+  --bg-gradient: linear-gradient(135deg, #f9faf7 0%, #e8f4eb 50%, #f0f4f0 100%);
+  --surface: #ffffff;
+  --surface-solid: #ffffff;
+  --surface-2: #f2f5ef;
+  --surface-2-solid: #f2f5ef;
+  --border: #d8e4d0;
+  --border-solid: #d8e4d0;
+  --text: #1a1f16;
+  --text-muted: #5a6b52;
+  --accent: #3a7d44;
+  --accent-hover: #2d6035;
+  --accent-light: #e8f4eb;
+  --accent-mid: #5da668;
+  --easy: #3a7d44;
+  --medium: #d97706;
+  --hard: #dc2626;
+  --tag-bg: #e8f4eb;
+  --tag-text: #2d6035;
+  --sim-bg: #1a1f16;
+  --glass-bg: rgba(255,255,255,0.7);
+  --glass-border: rgba(0,0,0,0.08);
+  --glass-shadow: 0 4px 24px rgba(0,0,0,0.08);
 }

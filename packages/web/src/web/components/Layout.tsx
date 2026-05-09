@@ -65,11 +65,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--bg)" }}>
+    <div className="min-h-screen flex flex-col">
       {/* Top Nav */}
       <header
         className="sticky top-0 z-50 border-b"
-        style={{ background: "var(--surface)", borderColor: "var(--border)" }}
+        style={{
+          background: "rgba(13, 17, 23, 0.8)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          borderColor: "var(--border)",
+        }}
       >
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link to="/">
@@ -124,7 +129,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <div className="fixed inset-0 z-10" onClick={() => setMoreOpen(false)} />
                   <div
                     className="absolute left-0 top-full mt-1 w-40 rounded-xl shadow-lg z-20 py-1"
-                    style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                    style={{ background: "rgba(13,17,23,0.95)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid var(--border)" }}
                   >
                     {moreLinks.map(({ to, icon: Icon, label }) => (
                       <Link key={to} to={to}>
@@ -192,7 +197,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <div className="fixed inset-0 z-10" onClick={() => setUserMenuOpen(false)} />
                     <div
                       className="absolute right-0 top-full mt-1 w-48 rounded-xl shadow-lg z-20 py-1"
-                      style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                      style={{ background: "rgba(13,17,23,0.95)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid var(--border)" }}
                     >
                       <div className="px-3 py-2 border-b" style={{ borderColor: "var(--border)" }}>
                         <p className="text-xs font-medium" style={{ color: "var(--text)" }}>{session.user.name}</p>
@@ -246,7 +251,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {mobileOpen && (
           <div
             className="md:hidden border-t px-4 py-3 flex flex-col gap-1"
-            style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+            style={{ borderColor: "var(--border)", background: "rgba(13,17,23,0.95)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
           >
             {allMobileLinks.map(({ to, icon: Icon, label }) => (
               <Link key={to} to={to}>
@@ -294,7 +299,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <footer
         className="border-t py-6 text-center text-xs"
-        style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}
+        style={{ borderColor: "var(--border)", color: "var(--text-muted)", background: "rgba(13,17,23,0.6)" }}
       >
         GreenBook Interactive — Inspired by{" "}
         <em>A Practical Guide to Quantitative Finance Interviews</em> by Xinfeng Zhou

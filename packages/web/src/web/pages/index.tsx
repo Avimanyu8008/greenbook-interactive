@@ -18,7 +18,6 @@ export default function HomePage() {
       <section
         className="relative overflow-hidden"
         style={{
-          background: "linear-gradient(135deg, #f9faf7 0%, #e8f4eb 40%, #f9faf7 100%)",
           borderBottom: "1px solid var(--border)",
         }}
       >
@@ -26,7 +25,7 @@ export default function HomePage() {
           {/* Badge */}
           <div
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium mb-6"
-            style={{ background: "var(--accent-light)", color: "var(--accent)", border: "1px solid #c6e0cb" }}
+            style={{ background: "var(--accent-light)", color: "var(--accent)", border: "1px solid rgba(74,222,128,0.2)" }}
           >
             <Zap size={11} />
             Inspired by Xinfeng Zhou's Green Book
@@ -77,9 +76,9 @@ export default function HomePage() {
 
         {/* Decorative grid */}
         <div
-          className="absolute inset-0 opacity-5"
+          className="absolute inset-0 opacity-10"
           style={{
-            backgroundImage: "radial-gradient(var(--accent) 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(rgba(74,222,128,0.4) 1px, transparent 1px)",
             backgroundSize: "30px 30px",
           }}
         />
@@ -88,7 +87,7 @@ export default function HomePage() {
       {/* Stats Bar */}
       <section
         className="border-b"
-        style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+        style={{ borderColor: "var(--border)", background: "rgba(255,255,255,0.02)", backdropFilter: "blur(8px)" }}
       >
         <div className="max-w-5xl mx-auto px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
@@ -133,8 +132,8 @@ export default function HomePage() {
             return (
               <Link key={cat} to={`/problems?category=${encodeURIComponent(cat)}`}>
                 <div
-                  className="p-4 rounded-xl border cursor-pointer transition-all hover:border-[var(--accent)] hover:shadow-sm group"
-                  style={{ background: "var(--surface)", borderColor: "var(--border)" }}
+                  className="p-4 rounded-xl border cursor-pointer transition-all hover:border-[var(--accent)] group"
+                  style={{ background: "var(--glass-bg)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderColor: "var(--glass-border)", boxShadow: "var(--glass-shadow)" }}
                 >
                   <div className="text-sm font-semibold mb-1 group-hover:text-[var(--accent)] transition-colors" style={{ color: "var(--text)" }}>
                     {cat}
@@ -160,7 +159,7 @@ export default function HomePage() {
       {/* Featured Problems */}
       <section
         className="border-t"
-        style={{ borderColor: "var(--border)", background: "var(--surface-2)" }}
+        style={{ borderColor: "var(--border)", background: "rgba(255,255,255,0.02)" }}
       >
         <div className="max-w-5xl mx-auto px-6 py-12">
           <div className="flex items-center justify-between mb-6">
@@ -187,10 +186,13 @@ export default function HomePage() {
               return (
                 <Link key={problem.id} to={`/problems/${problem.id}`}>
                   <div
-                    className="p-5 rounded-xl border cursor-pointer transition-all hover:border-[var(--accent)] hover:shadow-md group"
+                    className="p-5 rounded-xl border cursor-pointer transition-all hover:border-[var(--accent)] group"
                     style={{
-                      background: "var(--surface)",
-                      borderColor: prog?.solved ? "var(--accent)" : "var(--border)",
+                      background: "var(--glass-bg)",
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                      borderColor: prog?.solved ? "var(--accent)" : "var(--glass-border)",
+                      boxShadow: "var(--glass-shadow)",
                     }}
                   >
                     <div className="flex items-start justify-between mb-2">
@@ -246,8 +248,8 @@ export default function HomePage() {
           ].map(({ icon: Icon, label, desc, to, color, accent }) => (
             <Link key={to} to={to}>
               <div
-                className="p-4 rounded-xl cursor-pointer transition-all hover:shadow-md group"
-                style={{ background: color, border: `1px solid ${accent}20` }}
+                className="p-4 rounded-xl cursor-pointer transition-all group"
+                style={{ background: "var(--glass-bg)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", border: `1px solid ${accent}25`, boxShadow: "var(--glass-shadow)" }}
               >
                 <div
                   className="w-9 h-9 rounded-lg flex items-center justify-center mb-3"
@@ -292,7 +294,7 @@ export default function HomePage() {
             <div key={title} className="text-center">
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
-                style={{ background: "var(--accent-light)" }}
+                style={{ background: "var(--glass-bg)", backdropFilter: "blur(8px)", border: "1px solid var(--glass-border)" }}
               >
                 <Icon size={22} style={{ color: "var(--accent)" }} />
               </div>

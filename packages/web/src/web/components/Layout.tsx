@@ -12,9 +12,9 @@ import { authClient } from "../lib/auth";
 function useTheme() {
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     try {
-      return (localStorage.getItem("gb_theme") as "light" | "dark") || "light";
+      return (localStorage.getItem("gb_theme") as "light" | "dark") || "dark";
     } catch {
-      return "light";
+      return "dark";
     }
   });
 

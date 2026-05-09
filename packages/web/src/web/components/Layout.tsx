@@ -101,7 +101,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <span
                   className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap"
                   style={{
-                    color: location === to ? "var(--accent)" : "var(--text-muted)",
+                    color: location === to ? "var(--accent)" : "#a0b8a8",
                     background: location === to ? "var(--accent-light)" : "transparent",
                   }}
                 >
@@ -117,7 +117,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 onClick={() => setMoreOpen(!moreOpen)}
                 className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
                 style={{
-                  color: moreLinks.some(l => l.to === location) ? "var(--accent)" : "var(--text-muted)",
+                  color: moreLinks.some(l => l.to === location) ? "var(--accent)" : "#a0b8a8",
                   background: moreLinks.some(l => l.to === location) ? "var(--accent-light)" : "transparent",
                 }}
               >
@@ -170,7 +170,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <button
               onClick={toggle}
               className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-[var(--surface-2)]"
-              style={{ color: "var(--text-muted)" }}
+              style={{ color: "#a0b8a8" }}
               title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
             >
               {theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
@@ -258,7 +258,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <span
                   className="flex items-center gap-2 px-3 py-2 rounded-md text-sm cursor-pointer"
                   style={{
-                    color: location === to ? "var(--accent)" : "var(--text-muted)",
+                    color: location === to ? "var(--accent)" : "#a0b8a8",
                     background: location === to ? "var(--accent-light)" : "transparent",
                   }}
                   onClick={() => setMobileOpen(false)}
@@ -299,7 +299,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <footer
         className="border-t py-6 text-center text-xs"
-        style={{ borderColor: "var(--border)", color: "var(--text-muted)", background: "rgba(13,17,23,0.6)" }}
+        style={{ borderColor: "var(--border)", color: "#a0b8a8", background: "rgba(13,17,23,0.6)" }}
       >
         GreenBook Interactive — Inspired by{" "}
         <em>A Practical Guide to Quantitative Finance Interviews</em> by Xinfeng Zhou

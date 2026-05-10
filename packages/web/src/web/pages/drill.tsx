@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Brain, CheckCircle, XCircle, Timer, RotateCcw, Trophy, Zap, ChevronRight } from "lucide-react";
 
 type DrillMode = "arithmetic" | "fractions" | "percentages" | "powers" | "quant" | "mixed";
@@ -366,6 +366,8 @@ export default function DrillPage() {
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
   const [history, setHistory] = useState<{ q: string; got: number; expected: number; ok: boolean }[]>([]);
   const [totalTime, setTotalTime] = useState(0);
+  const [pointsPopups, setPointsPopups] = useState<{ id: number; x: number; y: number }[]>([]);
+  const popupCounter = useRef(0);
 
   const nextQuestion = useCallback(() => {
     setQuestion(generateQuestion(mode));
@@ -381,7 +383,14 @@ export default function DrillPage() {
     const ok = got !== null && Math.abs(got - expected) <= Math.max(1, tol);
     setFeedback(ok ? "correct" : "wrong");
     setHistory(h => [...h, { q: question.text, got: got ?? -999, expected, ok }]);
-    if (ok) setCorrect(c => c + 1);
+    if (ok) {
+      setCorrect(c => c + 1);
+      const id = ++popupCounter.current;
+      // random horizontal spread so multiple don't stack
+      const x = 45 + Math.random() * 10;
+      setPointsPopups(p => [...p, { id, x, y: 50 }]);
+      setTimeout(() => setPointsPopups(p => p.filter(pp => pp.id !== id)), 900);
+    }
     setTimeout(() => {
       if (round + 1 >= ROUND_COUNT) {
         setGameState("finished");
@@ -425,7 +434,33 @@ export default function DrillPage() {
   const timerPct = (timeLeft / TIME_LIMIT) * 100;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
+    <div className="max-w-2xl mx-auto px-4 py-10" style={{ position: "relative" }}>
+      <style>{`
+        @keyframes floatUp {
+          0%   { opacity: 1; transform: translateY(0) scale(1.2); }
+          60%  { opacity: 1; transform: translateY(-60px) scale(1); }
+          100% { opacity: 0; transform: translateY(-90px) scale(0.8); }
+        }
+        .points-popup {
+          position: fixed;
+          pointer-events: none;
+          z-index: 9999;
+          font-size: 1.6rem;
+          font-weight: 800;
+          color: #22c55e;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+          animation: floatUp 0.9s ease-out forwards;
+        }
+      `}</style>
+      {pointsPopups.map(p => (
+        <span
+          key={p.id}
+          className="points-popup"
+          style={{ left: `${p.x}%`, top: `45%` }}
+        >
+          +1
+        </span>
+      ))}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-1">
           <Brain size={20} style={{ color: "var(--accent)" }} />

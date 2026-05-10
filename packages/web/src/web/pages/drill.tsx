@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Brain, CheckCircle, XCircle, Timer, RotateCcw, Trophy, Zap, ChevronRight } from "lucide-react";
 
-type DrillMode = "arithmetic" | "fractions" | "percentages" | "powers" | "mixed";
+type DrillMode = "arithmetic" | "fractions" | "percentages" | "powers" | "quant" | "mixed";
 type GameState = "idle" | "playing" | "finished";
 
 interface Question {
@@ -10,99 +10,320 @@ interface Question {
   tolerance?: number; // for decimal answers
 }
 
+const rnd = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+const pick = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+
 function generateArithmetic(): Question {
-  const ops = ["+", "-", "×", "÷"] as const;
-  const op = ops[Math.floor(Math.random() * ops.length)];
-  let a: number, b: number, answer: number, text: string;
-  switch (op) {
-    case "+":
-      a = Math.floor(Math.random() * 999) + 1;
-      b = Math.floor(Math.random() * 999) + 1;
-      answer = a + b;
-      text = `${a} + ${b}`;
-      break;
-    case "-":
-      a = Math.floor(Math.random() * 999) + 100;
-      b = Math.floor(Math.random() * (a - 1)) + 1;
-      answer = a - b;
-      text = `${a} − ${b}`;
-      break;
-    case "×":
-      a = Math.floor(Math.random() * 25) + 2;
-      b = Math.floor(Math.random() * 25) + 2;
-      answer = a * b;
-      text = `${a} × ${b}`;
-      break;
-    default:
-      b = Math.floor(Math.random() * 12) + 2;
-      answer = Math.floor(Math.random() * 50) + 2;
-      a = b * answer;
-      text = `${a} ÷ ${b}`;
-  }
-  return { text, answer };
+  const templates = [
+    // Two 3-digit addition
+    () => { const a = rnd(100, 999), b = rnd(100, 999); return { text: `${a} + ${b}`, answer: a + b }; },
+    // Two 3-digit subtraction
+    () => { const a = rnd(200, 999), b = rnd(100, a - 1); return { text: `${a} − ${b}`, answer: a - b }; },
+    // Multiplication up to 25×25
+    () => { const a = rnd(2, 25), b = rnd(2, 25); return { text: `${a} × ${b}`, answer: a * b }; },
+    // Large × small
+    () => { const a = rnd(50, 999), b = rnd(2, 9); return { text: `${a} × ${b}`, answer: a * b }; },
+    // Clean division
+    () => { const b = rnd(2, 15), ans = rnd(10, 99); return { text: `${b * ans} ÷ ${b}`, answer: ans }; },
+    // Three number addition
+    () => { const a = rnd(10, 200), b = rnd(10, 200), c = rnd(10, 200); return { text: `${a} + ${b} + ${c}`, answer: a + b + c }; },
+    // Multiply by 11
+    () => { const a = rnd(11, 99); return { text: `${a} × 11`, answer: a * 11 }; },
+    // Multiply by 15
+    () => { const a = rnd(4, 40); return { text: `${a} × 15`, answer: a * 15 }; },
+    // Multiply by 25
+    () => { const a = rnd(4, 40); return { text: `${a} × 25`, answer: a * 25 }; },
+    // Double a number
+    () => { const a = rnd(100, 9999); return { text: `Double ${a}`, answer: a * 2 }; },
+    // Half a number
+    () => { const a = rnd(50, 500) * 2; return { text: `Half of ${a}`, answer: a / 2 }; },
+    // 1000 minus
+    () => { const a = rnd(1, 999); return { text: `1000 − ${a}`, answer: 1000 - a }; },
+    // Multiply by 5 (halve then ×10)
+    () => { const a = rnd(20, 200); return { text: `${a} × 5`, answer: a * 5 }; },
+    // Two digit × two digit
+    () => { const a = rnd(11, 49), b = rnd(11, 49); return { text: `${a} × ${b}`, answer: a * b }; },
+    // Large addition chain
+    () => { const a = rnd(100, 500), b = rnd(100, 500), c = rnd(100, 500); return { text: `${a} + ${b} + ${c}`, answer: a + b + c }; },
+    // Subtraction from round number
+    () => { const base = pick([500, 1000, 2000, 5000]), sub = rnd(1, base - 1); return { text: `${base} − ${sub}`, answer: base - sub }; },
+    // Multiply by 9 trick
+    () => { const a = rnd(5, 50); return { text: `${a} × 9`, answer: a * 9 }; },
+    // Multiply by 99
+    () => { const a = rnd(2, 20); return { text: `${a} × 99`, answer: a * 99 }; },
+  ];
+  return pick(templates)();
 }
 
 function generateFraction(): Question {
   const templates = [
+    // Fraction to percent
     () => {
-      const n = Math.floor(Math.random() * 9) + 1;
-      const d = [4, 5, 8, 10, 16, 20, 25, 100][Math.floor(Math.random() * 8)];
-      return { text: `${n}/${d} as a decimal (×100 = ?)`, answer: Math.round((n / d) * 100), tolerance: 0 };
+      const n = rnd(1, 9);
+      const d = pick([4, 5, 8, 10, 16, 20, 25, 50]);
+      return { text: `${n}/${d} as % (round)`, answer: Math.round((n / d) * 100) };
     },
+    // Add fractions, find numerator
     () => {
-      const a = Math.floor(Math.random() * 8) + 1;
-      const b = Math.floor(Math.random() * 8) + 1;
-      const d1 = [2, 3, 4, 5, 6, 8][Math.floor(Math.random() * 6)];
-      const d2 = [2, 3, 4, 5, 6, 8][Math.floor(Math.random() * 6)];
-      const ans = a * d2 + b * d1;
-      return { text: `${a}/${d1} + ${b}/${d2} = ?/${d1 * d2}`, answer: ans, tolerance: 0 };
+      const a = rnd(1, 7), b = rnd(1, 7);
+      const d1 = pick([2, 3, 4, 5, 6]), d2 = pick([2, 3, 4, 5, 6]);
+      return { text: `${a}/${d1} + ${b}/${d2} = ?/${d1 * d2}`, answer: a * d2 + b * d1 };
+    },
+    // Simplify: what is n/d × d2?
+    () => {
+      const d = pick([2, 3, 4, 5, 6, 8, 10]);
+      const n = rnd(1, d - 1);
+      const mult = rnd(2, 10) * d;
+      return { text: `${n}/${d} of ${mult}`, answer: (n * mult) / d };
+    },
+    // Fraction comparison: which is larger? (answer 1 or 2)
+    () => {
+      const pairs = [[2, 3, 3, 4], [3, 5, 2, 3], [4, 7, 3, 5], [5, 8, 3, 4], [2, 5, 3, 8]];
+      const [a, b, c, d] = pick(pairs);
+      const ans = a / b > c / d ? 1 : 2;
+      return { text: `${a}/${b} vs ${c}/${d}: larger? (1 or 2)`, answer: ans };
+    },
+    // Mixed number addition
+    () => {
+      const w1 = rnd(1, 5), w2 = rnd(1, 5);
+      const d = pick([2, 4, 5, 10]);
+      const n1 = rnd(1, d - 1), n2 = rnd(1, d - 1);
+      const totalN = n1 + n2;
+      const extra = Math.floor(totalN / d);
+      const rem = totalN % d;
+      const ans = w1 + w2 + extra;
+      return { text: `${w1} ${n1}/${d} + ${w2} ${n2}/${d}: whole part?`, answer: ans };
+    },
+    // Decimal to fraction denominator
+    () => {
+      const pairs = [[0.25, 4], [0.5, 2], [0.2, 5], [0.125, 8], [0.1, 10], [0.333, 3], [0.75, 4], [0.4, 5], [0.6, 5], [0.8, 5]];
+      const [dec, denom] = pick(pairs);
+      return { text: `${dec} ≈ 1/?`, answer: denom };
+    },
+    // n/d × m/p
+    () => {
+      const a = rnd(1, 6), b = rnd(2, 8), c = rnd(1, 6), d = rnd(2, 8);
+      const num = a * c, den = b * d;
+      const g = gcd(num, den);
+      return { text: `${a}/${b} × ${c}/${d} = ?/${den / g} (numerator)`, answer: num / g };
+    },
+    // What fraction of X is Y?
+    () => {
+      const d = pick([2, 3, 4, 5, 8, 10]);
+      const n = rnd(1, d - 1);
+      const whole = rnd(2, 10) * d;
+      return { text: `${(n / d * whole)} out of ${whole} = ?/${d}`, answer: n };
     },
   ];
-  return templates[Math.floor(Math.random() * templates.length)]();
+  return pick(templates)();
 }
+
+function gcd(a: number, b: number): number { return b === 0 ? a : gcd(b, a % b); }
 
 function generatePercentage(): Question {
   const templates = [
+    // Basic % of number
     () => {
-      const pct = [5, 10, 15, 20, 25, 30, 40, 50, 75][Math.floor(Math.random() * 9)];
-      const n = Math.floor(Math.random() * 20) * 10 + 20;
+      const pct = pick([5, 10, 12.5, 15, 20, 25, 30, 33, 40, 50, 60, 75, 80]);
+      const n = rnd(2, 40) * 10;
       return { text: `${pct}% of ${n}`, answer: Math.round(n * pct / 100) };
     },
+    // % increase
     () => {
-      const a = Math.floor(Math.random() * 90) + 10;
-      const b = Math.floor(Math.random() * 90) + 10;
-      const pct = Math.round(a / b * 100);
-      return { text: `${a} is what % of ${b}? (round)`, answer: pct };
-    },
-    () => {
-      const start = Math.floor(Math.random() * 50) * 10 + 50;
-      const pct = [10, 20, 25, 50][Math.floor(Math.random() * 4)];
+      const start = rnd(2, 20) * 50;
+      const pct = pick([10, 20, 25, 50, 100]);
       return { text: `${start} increased by ${pct}%`, answer: Math.round(start * (1 + pct / 100)) };
     },
+    // % decrease
+    () => {
+      const start = rnd(2, 20) * 50;
+      const pct = pick([10, 20, 25, 50]);
+      return { text: `${start} decreased by ${pct}%`, answer: Math.round(start * (1 - pct / 100)) };
+    },
+    // What % is A of B
+    () => {
+      const b = pick([20, 25, 40, 50, 80, 100, 200, 400, 500]);
+      const n = pick([1, 2, 4, 5, 8, 10]);
+      return { text: `${n} is what % of ${b}?`, answer: Math.round(n / b * 100) };
+    },
+    // Reverse: X% of ? = Y
+    () => {
+      const pct = pick([10, 20, 25, 50]);
+      const ans = rnd(2, 20) * 10;
+      return { text: `${pct}% of ? = ${pct * ans / 100}`, answer: ans };
+    },
+    // Combined % changes
+    () => {
+      const p1 = pick([10, 20, 25, 50]);
+      const p2 = pick([10, 20, 25, 50]);
+      const start = pick([100, 200, 400, 500, 1000]);
+      const result = Math.round(start * (1 + p1 / 100) * (1 - p2 / 100));
+      return { text: `${start} up ${p1}% then down ${p2}%`, answer: result };
+    },
+    // % of % 
+    () => {
+      const p1 = pick([10, 20, 25, 50]);
+      const p2 = pick([10, 20, 25, 50]);
+      const n = pick([100, 200, 400, 500, 1000]);
+      return { text: `${p1}% of ${p2}% of ${n}`, answer: Math.round(n * p1 / 100 * p2 / 100) };
+    },
+    // Tip calculation
+    () => {
+      const bill = rnd(2, 20) * 10;
+      const pct = pick([10, 15, 20]);
+      return { text: `${pct}% tip on ${bill}`, answer: Math.round(bill * pct / 100) };
+    },
+    // Break even
+    () => {
+      const cost = rnd(5, 30) * 10;
+      const pct = pick([10, 20, 25, 50]);
+      return { text: `Buy at ${cost}, sell at ${pct}% profit = ?`, answer: Math.round(cost * (1 + pct / 100)) };
+    },
+    // 1% of large number
+    () => {
+      const n = rnd(1, 9) * 1000 + rnd(0, 9) * 100;
+      return { text: `1% of ${n}`, answer: Math.round(n / 100) };
+    },
   ];
-  return templates[Math.floor(Math.random() * templates.length)]();
+  return pick(templates)();
 }
 
 function generatePower(): Question {
   const templates = [
+    // Squares up to 30
+    () => { const b = rnd(2, 30); return { text: `${b}²`, answer: b * b }; },
+    // Cubes up to 12
+    () => { const b = rnd(2, 12); return { text: `${b}³`, answer: b * b * b }; },
+    // Perfect square roots
     () => {
-      const base = Math.floor(Math.random() * 15) + 2;
-      return { text: `${base}²`, answer: base * base };
+      const bases = [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+      const b = pick(bases);
+      return { text: `√${b * b}`, answer: b };
     },
+    // Powers of 2
+    () => { const exp = rnd(1, 16); return { text: `2^${exp}`, answer: Math.pow(2, exp) }; },
+    // Powers of 3
+    () => { const exp = rnd(1, 8); return { text: `3^${exp}`, answer: Math.pow(3, exp) }; },
+    // Powers of 5
+    () => { const exp = rnd(1, 6); return { text: `5^${exp}`, answer: Math.pow(5, exp) }; },
+    // Cube roots
     () => {
-      const base = Math.floor(Math.random() * 8) + 2;
-      return { text: `${base}³`, answer: base * base * base };
+      const bases = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+      const b = pick(bases);
+      return { text: `∛${b * b * b}`, answer: b };
     },
+    // Square then add
+    () => { const a = rnd(2, 15), b = rnd(2, 15); return { text: `${a}² + ${b}²`, answer: a*a + b*b }; },
+    // Factorial
     () => {
-      const n = [4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225][Math.floor(Math.random() * 14)];
-      return { text: `√${n}`, answer: Math.round(Math.sqrt(n)) };
+      const facts: Record<number, number> = { 1:1, 2:2, 3:6, 4:24, 5:120, 6:720, 7:5040 };
+      const n = pick([1,2,3,4,5,6,7]);
+      return { text: `${n}!`, answer: facts[n] };
     },
+    // Power of 10
+    () => { const exp = rnd(1, 9); return { text: `10^${exp}`, answer: Math.pow(10, exp) }; },
+    // n² − m²
+    () => { const a = rnd(5, 20), b = rnd(2, a - 1); return { text: `${a}² − ${b}²`, answer: a*a - b*b }; },
+    // (a+b)² expanded
+    () => { const a = rnd(2, 10), b = rnd(2, 10); return { text: `(${a}+${b})²`, answer: (a+b)*(a+b) }; },
+    // log base 2 (small)
     () => {
-      const exp = Math.floor(Math.random() * 10) + 1;
-      return { text: `2^${exp}`, answer: Math.pow(2, exp) };
+      const exp = rnd(1, 10);
+      return { text: `log₂(${Math.pow(2, exp)})`, answer: exp };
+    },
+    // Powers of 4
+    () => { const exp = rnd(1, 6); return { text: `4^${exp}`, answer: Math.pow(4, exp) }; },
+    // LCM of two numbers
+    () => {
+      const pairs = [[4,6],[3,8],[6,10],[4,9],[5,6],[8,12],[6,15],[9,12]];
+      const [a, b] = pick(pairs);
+      const l = (a * b) / gcd(a, b);
+      return { text: `LCM(${a}, ${b})`, answer: l };
+    },
+    // GCD
+    () => {
+      const pairs = [[12,18],[24,36],[15,25],[16,24],[30,45],[8,20],[21,35]];
+      const [a, b] = pick(pairs);
+      return { text: `GCD(${a}, ${b})`, answer: gcd(a, b) };
     },
   ];
-  return templates[Math.floor(Math.random() * templates.length)]();
+  return pick(templates)();
+}
+
+// New: Quant-specific question types
+function generateQuant(): Question {
+  const templates = [
+    // Expected value of a dice
+    () => ({ text: `E[fair 6-sided die] × 6`, answer: 21 }),
+    // Probability as fraction → percent
+    () => {
+      const pairs = [[1,4,25],[1,5,20],[1,3,33],[2,5,40],[3,4,75],[1,6,17],[1,8,13],[3,8,38]];
+      const [n, d, pct] = pick(pairs);
+      return { text: `P = ${n}/${d} as % (round)`, answer: pct };
+    },
+    // Combinations C(n,2)
+    () => {
+      const n = rnd(3, 15);
+      return { text: `C(${n},2)`, answer: (n * (n - 1)) / 2 };
+    },
+    // C(n,3)
+    () => {
+      const n = rnd(4, 10);
+      return { text: `C(${n},3)`, answer: (n * (n-1) * (n-2)) / 6 };
+    },
+    // Simple EV: coin flip
+    () => {
+      const win = rnd(2, 20) * 5;
+      const lose = rnd(1, 10) * 5;
+      const ev = Math.round((win - lose) / 2);
+      return { text: `Fair coin: win ${win}, lose ${lose}. EV?`, answer: ev };
+    },
+    // 52 card probability
+    () => {
+      const cards = pick([
+        { text: `P(ace from 52 cards) × 52`, answer: 4 },
+        { text: `P(heart from 52 cards) × 52`, answer: 13 },
+        { text: `P(face card from 52) × 52`, answer: 12 },
+        { text: `P(red card from 52) × 52`, answer: 26 },
+      ]);
+      return cards;
+    },
+    // Sum of 1 to n
+    () => {
+      const n = pick([10, 15, 20, 25, 50, 100]);
+      return { text: `1+2+...+${n}`, answer: (n * (n + 1)) / 2 };
+    },
+    // Geometric series sum
+    () => {
+      const r = pick([2, 3]);
+      const n = rnd(3, 7);
+      const sum = (Math.pow(r, n) - 1) / (r - 1);
+      return { text: `1+${r}+${r}²+...+${r}^${n-1}`, answer: sum };
+    },
+    // n! / (n-1)!
+    () => {
+      const n = rnd(3, 10);
+      return { text: `${n}! / ${n-1}!`, answer: n };
+    },
+    // Permutations P(n,2)
+    () => {
+      const n = rnd(4, 12);
+      return { text: `P(${n},2) = ${n}×?`, answer: n - 1 };
+    },
+    // Interest: simple
+    () => {
+      const p = pick([100, 200, 500, 1000]);
+      const r = pick([5, 10, 20]);
+      const t = pick([1, 2, 3]);
+      return { text: `Simple interest: ${p} at ${r}% for ${t}yr`, answer: p + p * r / 100 * t };
+    },
+    // Doubling time rule of 72
+    () => {
+      const r = pick([4, 6, 8, 9, 12]);
+      return { text: `Rule of 72: ${r}% rate, years to double?`, answer: Math.round(72 / r) };
+    },
+  ];
+  return pick(templates)();
 }
 
 function generateQuestion(mode: DrillMode): Question {
@@ -110,9 +331,16 @@ function generateQuestion(mode: DrillMode): Question {
   if (mode === "fractions") return generateFraction();
   if (mode === "percentages") return generatePercentage();
   if (mode === "powers") return generatePower();
-  // mixed
-  const gen = [generateArithmetic, generateFraction, generatePercentage, generatePower];
-  return gen[Math.floor(Math.random() * gen.length)]();
+  if (mode === "quant") return generateQuant();
+  // mixed — weighted across all 6 generators
+  const gen = [
+    generateArithmetic, generateArithmetic, // slightly more arithmetic
+    generateFraction,
+    generatePercentage, generatePercentage,
+    generatePower,
+    generateQuant, generateQuant, // quant-specific gets good weight
+  ];
+  return pick(gen)();
 }
 
 const MODE_LABELS: Record<DrillMode, string> = {
@@ -120,6 +348,7 @@ const MODE_LABELS: Record<DrillMode, string> = {
   fractions: "Fractions",
   percentages: "Percentages",
   powers: "Powers & Roots",
+  quant: "Quant",
   mixed: "Mixed",
 };
 
